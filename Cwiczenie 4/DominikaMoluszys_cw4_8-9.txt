@@ -1,0 +1,121 @@
+===============================================================================================
+Zadanie 8
+===============================================================================================
+
+DECLARE 
+    CURSOR ZAD8 (MIN_SALARY NUMBER, MAX_SALARY NUMBER, PARTNAME VARCHAR) 
+    IS SELECT SALARY, FIRST_NAME, LAST_NAME FROM EMPLOYEES
+    WHERE SALARY>MIN_SALARY AND SALARY<MAX_SALARY AND (LAST_NAME LIKE 
+    LOWER('%' || PARTNAME || '%') OR LAST_NAME LIKE UPPER('%' || PARTNAME || '%'));
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Zadanie 8a');
+    FOR ROW IN ZAD8(1000, 5000, 'a')
+    LOOP
+    	DBMS_OUTPUT.PUT_LINE(ROW.FIRST_NAME || ' ' || ROW.LAST_NAME || ' ' || ROW.SALARY);
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('Zadanie 8b');
+    FOR ROW IN ZAD8(5000, 20000, 'u')
+    LOOP
+    	DBMS_OUTPUT.PUT_LINE(ROW.FIRST_NAME || ' ' || ROW.LAST_NAME || ' ' || ROW.SALARY);
+    END LOOP;
+END;
+
+
+===============================================================================================
+Zadanie 9a
+===============================================================================================
+
+CREATE OR REPLACE PROCEDURE ZAD9A(CREATE_JOB_ID IN VARCHAR, CREATE_JOB_TITLE IN VARCHAR) IS
+WYJATEK EXCEPTION;
+BEGIN
+    INSERT INTO JOBS VALUES(CREATE_JOB_ID, CREATE_JOB_TITLE, NULL, NULL);
+    DBMS_OUTPUT.PUT_LINE(CREATE_JOB_ID || ' ' || CREATE_JOB_TITLE || ' added to table Jobs.');
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN DBMS_OUTPUT.PUT_LINE('Job with this ID already exists.');
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error occured!');
+END;
+
+
+===============================================================================================
+Zadanie 9b
+===============================================================================================
+
+CREATE OR REPLACE PROCEDURE ZAD9B(UPDATE_JOB_ID IN VARCHAR, UPDATE_JOB_TITLE IN VARCHAR) IS
+WIERSZ JOBS%ROWTYPE;
+WYJATEK EXCEPTION;
+BEGIN
+    SELECT * INTO WIERSZ FROM JOBS WHERE JOB_ID=UPDATE_JOB_ID;
+    UPDATE JOBS SET JOB_TITLE = UPDATE_JOB_TITLE WHERE JOB_ID = UPDATE_JOB_ID;
+    DBMS_OUTPUT.PUT_LINE('Job updated.');
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN DBMS_OUTPUT.PUT_LINE('No Jobs updated.');
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error occured!');
+END;
+
+
+===============================================================================================
+Zadanie 9c
+===============================================================================================
+
+CREATE OR REPLACE PROCEDURE ZAD9C(DELETE_JOB_ID IN VARCHAR) IS
+WIERSZ JOBS%ROWTYPE;
+WYJATEK EXCEPTION;
+BEGIN
+    SELECT * INTO WIERSZ FROM JOBS WHERE JOB_ID=DELETE_JOB_ID;
+    DELETE FROM JOBS WHERE JOB_ID = DELETE_JOB_ID;
+    DBMS_OUTPUT.PUT_LINE('Job deleted.');
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN DBMS_OUTPUT.PUT_LINE('No Jobs deleted.');
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error occured!');
+END;
+
+
+===============================================================================================
+Zadanie 9d
+===============================================================================================
+
+CREATE OR REPLACE PROCEDURE ZAD9D(SHOW_EMPLOYEE_ID IN VARCHAR, SHOW_SALARY OUT NUMBER, 
+	SHOW_LASTNAME OUT VARCHAR) IS
+WYJATEK EXCEPTION;
+BEGIN
+    SELECT SALARY, LAST_NAME INTO SHOW_SALARY, SHOW_LASTNAME
+    	FROM EMPLOYEES WHERE EMPLOYEE_ID=SHOW_EMPLOYEE_ID;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN DBMS_OUTPUT.PUT_LINE('No Employees found.');
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error occured!');
+END;
+
+
+===============================================================================================
+Zadanie 9e
+===============================================================================================
+
+CREATE OR REPLACE PROCEDURE ZAD9E(
+EMPLOYEEID IN NUMBER DEFAULT EMPLOYEEID_SEQ.NEXTVAL,
+IMIE IN VARCHAR2 DEFAULT 'Dominika',
+NAZWISKO IN VARCHAR2 DEFAULT 'Moluszys',
+MAIL IN VARCHAR2 DEFAULT 'dominika_moluszys@abc.cba',
+TELEFON IN VARCHAR2 DEFAULT '123.456.7890',
+DATAZATRUDNIENIA IN DATE DEFAULT SYSDATE,
+JOBID IN VARCHAR2 DEFAULT 'FI_MGR',
+ZAROBKI IN NUMBER DEFAULT 6666,
+PROWIZJA IN NUMBER DEFAULT 2,
+MENADZER IN NUMBER DEFAULT 101,
+WYDZIAL IN NUMBER DEFAULT 90) IS
+WIERSZ JOBS%ROWTYPE;
+WYJATEK EXCEPTION;
+
+BEGIN
+	IF ZAROBKI>20000 THEN
+    	RAISE WYJATEK;
+    END IF;
+INSERT INTO EMPLOYEES VALUES (EMPLOYEEID, IMIE, NAZWISKO, MAIL, TELEFON, DATAZATRUDNIENIA, 
+	JOBID, ZAROBKI, PROWIZJA, MENADZER, WYDZIAL);
+DBMS_OUTPUT.PUT_LINE('Employee added.');
+EXCEPTION
+    WHEN WYJATEK THEN DBMS_OUTPUT.PUT_LINE('Salary is too high!');
+    WHEN NO_DATA_FOUND THEN DBMS_OUTPUT.PUT_LINE('No employee found.');
+    WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error occured!');
+END;
+
