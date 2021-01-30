@@ -1,0 +1,57 @@
+===============================================================================================
+Trigger 1
+===============================================================================================
+
+CREATE TABLE ARCHIWUM_DEPARTAMENTOW (DEPARTMENT_ID INT, DEPARTMENT_NAME VARCHAR2(30),
+	DATE DATE, MANAGER_FIRSTNAME VARCHAR2(20), MANAGER_LASTNAME VARCHAR2(20));	   
+	   
+CREATE OR REPLACE TRIGGER TRIGGER1 AFTER DELETE ON HR.DEPARTMENTS FOR EACH ROW
+DECLARE
+	IMIE VARCHAR(20); NAZWISKO VARCHAR(20);
+BEGIN
+	SELECT FIRST_NAME, LAST_NAME INTO IMIE, NAZWISKO from EMPLOYEES WHERE 
+		EMPLOYEE_ID = OLD.MANAGER_ID;
+	INSERT INTO ARCHIWUM_DEPARTAMENTOW (DEPARTMENT_ID, DEPARTMENT_NAME, DATE, 
+		MANAGER_FIRSTNAME, MANAGER_LASTNAME) 
+		VALUES(OLD.DEPARTMENT_ID, OLD.DEPARTMENT_NAME, SYSDATE, IMIE, NAZWISKO);
+END;
+
+
+===============================================================================================
+Trigger 3
+===============================================================================================
+
+CREATE SEQUENCE EMPLOYEES_ID_SEQ START WITH 1;
+
+CREATE OR REPLACE TRIGGER TRIGGER3 BEFORE INSERT ON EMPLOYEES FOR EACH ROW
+BEGIN
+	SELECT EMPLOYEES_ID_SEQ.NEXTVAL
+	INTO   :NEW.EMPLOYEE_ID
+	FROM   DUAL;
+END;
+
+
+===============================================================================================
+Trigger 4
+===============================================================================================
+
+CREATE OR REPLACE TRIGGER TRIGGER4 BEFORE INSERT OR UPDATE OR DELETE ON JOB_GRADES FOR EACH ROW
+BEGIN
+	DBMS_OUTPUT.PUT_LINE('An attempted to use a prohibited action!'); 
+END;
+
+
+===============================================================================================
+Trigger 5
+===============================================================================================
+
+CREATE OR REPLACE TRIGGER TRIGGER5 BEFORE INSERT OR UPDATE ON JOBS FOR EACH ROW
+DECLARE
+	MAXIMAL NUMBER; 
+	MINIMAL NUMBER;
+BEGIN
+    SELECT MAX_SALARY, MIN_SALARY INTO MAXIMAL, MINIMAL FROM JOBS WHERE JOB_ID = ROWID;
+	IF :NEW.MAX_SALARY<>MAXIMAL OR :NEW.MIN_SALARY<>MINIMAL
+		THEN DBMS_OUTPUT.PUT_LINE('An attempted to use a prohibited action!');  
+    END IF;  
+END;

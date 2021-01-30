@@ -1,0 +1,71 @@
+===============================================================================================
+Funkcja 1
+===============================================================================================
+
+CREATE OR REPLACE FUNCTION FUNKCJA1(JOBID VARCHAR) RETURN VARCHAR IS
+NAZWA JOBS.JOB_TITLE%TYPE;
+BEGIN
+    SELECT JOB_TITLE INTO NAZWA FROM JOBS WHERE JOB_ID = JOBID;
+    RETURN NAZWA;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN DBMS_OUTPUT.PUT_LINE('There is no job with the given ID number.'); 
+END FUNKCJA1;
+
+
+===============================================================================================
+Funkcja 2
+===============================================================================================
+
+CREATE OR REPLACE FUNCTION FUNKCJA2(EMPLOYEEID NUMBER) RETURN NUMBER IS
+ZAROBKI EMPLOYEES.SALARY%TYPE;
+PROWIZJA EMPLOYEES.COMMISSION_PCT%TYPE;
+BEGIN
+    SELECT SALARY, COMMISSION_PCT INTO ZAROBKI, PROWIZJA FROM EMPLOYEES WHERE 
+    	EMPLOYEE_ID = EMPLOYEEID;
+    IF PROWIZJA IS NULL THEN
+        RETURN ZAROBKI*12;
+    END IF;
+    RETURN (ZAROBKI * 12 + ZAROBKI * PROWIZJA);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN 
+    	DBMS_OUTPUT.PUT_LINE('There is no employee with the given ID number.'); 
+END FUNKCJA2;
+
+
+===============================================================================================
+Funkcja 3
+===============================================================================================
+
+CREATE OR REPLACE FUNCTION FUNKCJA3(NUMERTELEFONU VARCHAR) RETURN VARCHAR IS
+BEGIN
+    RETURN '(' || SUBSTR(NUMERTELEFONU, 1, 2) || ')' || SUBSTR(NUMERTELEFONU, 3);
+END FUNKCJA3;
+
+
+===============================================================================================
+Funkcja 4
+===============================================================================================
+
+CREATE OR REPLACE FUNCTION FUNKCJA4(LITERY VARCHAR) RETURN VARCHAR IS
+BEGIN
+    RETURN UPPER(SUBSTR(LITERY, 1, 1)) || LOWER(SUBSTR(LITERY, 2, LENGTH(LITERY) - 2)) || 
+    	(SUBSTR(LITERY, -1, 1));
+END FUNKCJA4;
+
+
+===============================================================================================
+Funkcja 5
+===============================================================================================
+
+CREATE OR REPLACE FUNCTION FUNKCJA5_DATE(PESEL VARCHAR) RETURN DATE IS
+BEGIN
+    RETURN TO_DATE('19' || SUBSTR(PESEL, 1, 2) || '-' || SUBSTR(PESEL, 3, 2) || '-' || 
+    	SUBSTR(PESEL, 5, 2));
+END FUNKCJA5_DATE;
+
+CREATE OR REPLACE FUNCTION FUNKCJA5_VARCHAR(PESEL VARCHAR) RETURN VARCHAR IS
+BEGIN
+    RETURN '19' || SUBSTR(PESEL, 1, 2) || '-' || SUBSTR(PESEL, 3, 2) || '-' || 
+    	SUBSTR(PESEL, 5, 2);
+END FUNKCJA5_VARCHAR;
+
